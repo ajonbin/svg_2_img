@@ -1,0 +1,10 @@
+[package]
+name = "svg_2_img"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+resvg = "0.35.0"
+tiny-skia = "0.10.0"
+usvg = "0.35.0"
+clap = { version = "4.4.11", features = ["derive"] }
