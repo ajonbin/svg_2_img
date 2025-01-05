@@ -1,58 +1,75 @@
-# SVG to Image Converter
+# SVG to PNG Converter
 
-A Rust-based tool for converting SVG files to PNG format with customizable dimensions.
+A Rust-based tool for converting SVG files to PNG format with support for Chinese text rendering.
 
 ## Features
-- Convert SVG files to PNG format
-- Maintain aspect ratio when only width or height is specified
-- Support custom output dimensions
-- High-quality rendering using resvg and tiny-skia
 
-## Dependencies
-- resvg (0.35.0): SVG rendering
-- tiny-skia (0.10.0): Rasterization
-- usvg (0.35.0): SVG parsing
-- clap (4.4.11): Command-line argument parsing
+- Convert SVG files to PNG format
+- Support for Chinese text rendering with various fallback fonts
+- Maintain aspect ratio while resizing
+- Batch conversion capability
+- Configurable output dimensions
+
+## Requirements
+
+- Rust (latest stable version)
+- Cargo package manager
 
 ## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/svg_2_img.git
+cd svg_2_img
+```
+
+2. Build the project:
 ```bash
 cargo build --release
 ```
 
 ## Usage
-The program supports the following command-line arguments:
+
+### Single File Conversion
+
+Convert a single SVG file to PNG:
+
 ```bash
-Options:
-  -i, --input <INPUT>    Input SVG file path (required)
-  -o, --output <OUTPUT>  Output PNG file path (required)
-  -w, --width <WIDTH>    Output width in pixels (optional)
-  -t, --height <HEIGHT>  Output height in pixels (optional)
-  -h, --help            Print help
-  -V, --version         Print version
+cargo run -- -i input.svg -o output.png -w 768 -t 1024
 ```
 
-### Examples
-1. Convert with original SVG dimensions:
+Parameters:
+- `-i, --input`: Input SVG file path
+- `-o, --output`: Output PNG file path
+- `-w, --width`: Output width in pixels (optional)
+- `-t, --height`: Output height in pixels (optional)
+
+### Batch Conversion
+
+Use the provided script to convert multiple SVG files:
+
 ```bash
-cargo run -- -i input.svg -o output.png
+./convert_all.sh
 ```
 
-2. Convert with specific width (height auto-calculated to maintain aspect ratio):
-```bash
-cargo run -- -i input.svg -o output.png -w 1080
-```
+The script will:
+1. Create a `png` subdirectory in the input directory
+2. Convert all SVG files with the pattern `*-svg.svg`
+3. Save PNG files with dimensions 768x1024
 
-3. Convert with specific height (width auto-calculated to maintain aspect ratio):
-```bash
-cargo run -- -i input.svg -o output.png -t 1920
-```
+## Font Support
 
-4. Convert with both dimensions specified:
-```bash
-cargo run -- -i input.svg -o output.png -w 1080 -t 1920
-```
+The converter includes support for various Chinese fonts:
+- SimSun
+- SimKai
+- KaiTi
+- Microsoft YaHei
+- WenQuanYi Micro Hei
+- Noto Sans CJK (SC, TC, JP)
 
-## Note
-- When only width or height is specified, the other dimension will be automatically calculated to maintain the original aspect ratio
-- The output will always be in PNG format
-- If neither width nor height is specified, the original SVG dimensions will be used
+## Dependencies
+
+- resvg: SVG rendering library
+- tiny-skia: 2D graphics library
+- usvg: SVG parser
+- clap: Command-line argument parser

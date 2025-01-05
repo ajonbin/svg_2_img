@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use clap::Parser;
 use resvg::tiny_skia;
-use resvg::usvg::{self, TreeParsing};
+use resvg::usvg::{self, TreeParsing, fontdb, TreeTextToPath};
 
 #[derive(Parser)]
 #[command(author, version, about = "Convert SVG to PNG with custom size")]
@@ -32,11 +32,33 @@ fn convert_svg_to_png(
     // Read SVG file
     let svg_data = std::fs::read(svg_path)?;
     
-    // Create a default options object
-    let opt = usvg::Options::default();
+    // Create font database and load system fonts
+    let mut fontdb = fontdb::Database::new();
+    fontdb.load_system_fonts();
     
-    // Parse SVG file
-    let tree = usvg::Tree::from_data(&svg_data, &opt)?;
+    // Add fallback fonts for Chinese characters
+    let fallback_fonts = vec![
+        "SimSun", "SimKai", "KaiTi", "Microsoft YaHei", "WenQuanYi Micro Hei",
+        "Noto Sans CJK SC", "Noto Sans CJK TC", "Noto Sans CJK JP",
+    ];
+    
+    for font in fallback_fonts {
+        fontdb.set_serif_family(font);
+        fontdb.set_sans_serif_family(font);
+    }
+
+    // Create options
+    let opt = usvg::Options {
+        resources_dir: std::path::Path::new(svg_path).parent().map(|p| p.to_path_buf()),
+        font_family: "Arial".to_string(),
+        font_size: 12.0,
+        languages: vec!["zh".to_string(), "en".to_string()],
+        ..Default::default()
+    };
+    
+    // Create a new tree with font database
+    let mut tree = usvg::Tree::from_data(&svg_data, &opt)?;
+    tree.convert_text(&fontdb);
     
     // Get the original size of the SVG
     let original_size = tree.view_box.rect;
